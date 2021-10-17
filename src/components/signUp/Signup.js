@@ -71,7 +71,7 @@ export default class Signup extends Component {
             />
           </FormGroup>
           <FormGroup>
-            <Label for="email">Email id</Label>
+            <Label for="email">Email</Label>
             <Input
               type="email"
               name="email"

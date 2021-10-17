@@ -1,42 +1,60 @@
+import "./styles.css";
+
 import React, { Component } from "react";
-import { Button } from "reactstrap";
-import { Redirect } from "react-router-dom";
+import axios from "axios";
 
-export default class Home extends Component {
-  state = {
-    navigate: false,
-  };
+const $ = require("jquery");
+// require("datatables.net")(window, $);
 
-  onLogoutHandler = () => {
-    localStorage.clear();
-    this.setState({
-      navigate: true,
+class Tbl extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      users: [],
+      loading: true
+    };
+  }
+
+  //option 2
+  async getUsersData1() {
+    const res = await axios.get("https://countriesnow.space/api/v0.1/countries/capital");
+    return res.data;
+  }
+
+  componentDidMount() {
+    this.getUsersData().then(() => this.sync());
+  }
+
+  sync() {
+    this.$el = $(this.el);
+    this.$el.DataTable({
+      data: this.state.users, //option 1
+      // data: this.getUsersData1(), //option 2
+      columns: [
+        { title: "Name", data: "name" },
+        { title: "Capital", data: "capital" },
+        
+      ]
     });
-  };
+  }
+
   render() {
-    const user = JSON.parse(localStorage.getItem("userData"));
-    const { navigate } = this.state;
-    if (navigate) {
-      return <Redirect to="/" push={true} />;
-    }
     return (
-      <div className="container  border">
-        <h3> HomePage</h3>
-        <div className="row">
-          <div className="col-xl-9 col-sm-12 col-md-9 text-dark">
-            <h5> Welcome, {user.first_name} </h5> You have Logged in
-            successfully.
-          </div>
-          <div className="col-xl-3 col-sm-12 col-md-3">
-            <Button
-              className="btn btn-primary text-right"
-              onClick={this.onLogoutHandler}
-            >
-              Logout
-            </Button>
-          </div>
-        </div>
-      </div>
+      <table
+        className="display"
+        width="100%"
+        ref={(el) => (this.el = el)}
+      ></table>
     );
   }
+}
+
+export default function App() {
+  return (
+    <div className="App">
+      <h1>Hello CodeSandbox</h1>
+      <h2>Start editing to see some magic happen!</h2>
+      <Tbl />
+    </div>
+  );
 }
